@@ -17,4 +17,6 @@ public interface ContentRepository extends JpaRepository<Content, Integer> {
     @Query("SELECT C FROM Content AS C WHERE C.userId = ?1 ORDER BY C.interest DESC")
     Page<Content> findTopEight(Integer id, Pageable pageable);
     Optional<Content> findById(Integer id);
+    Integer countContentById(Integer id);
+    Integer countContentByTitle(String title);
 }

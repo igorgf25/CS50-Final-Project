@@ -3,88 +3,44 @@ package com.igor.wishlistapi.controller;
 import com.igor.wishlistapi.controller.dto.PersonRq;
 import com.igor.wishlistapi.controller.dto.PersonRs;
 import com.igor.wishlistapi.model.Person;
-import com.igor.wishlistapi.repository.PersonRepository;
-import org.springframework.http.HttpStatus;
+import com.igor.wishlistapi.service.PersonService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/person")
 public class personController {
 
-    private final PersonRepository personRepository;
-    private final PasswordEncoder encoder;
-
-    public personController(PersonRepository personRepository, PasswordEncoder encoder) {
-        this.personRepository = personRepository;
-        this.encoder = encoder;
-    }
+    @Autowired
+    private PersonService personService;
 
     @GetMapping("/")
     public List<PersonRs> findAll(){
-        var people = personRepository.findAll();
-        return people.stream().map(PersonRs::convert).collect(Collectors.toList());
-
+        return personService.findAll();
     }
 
     @GetMapping("/{id}")
     public PersonRs findById(@PathVariable("id") Long id){
-        var person = personRepository.getOne(id);
-        return PersonRs.convert(person);
+        return personService.findById(id);
     }
 
     @PostMapping("/insert")
     public void insertPerson(@RequestBody PersonRq person)
     {
-        Person p = new Person();
-        p.setEmail(person.getEmail());
-        p.setLogin(person.getLogin());
-        p.setName(person.getName());
-        p.setPassword(encoder.encode(person.getPassword()));
-        personRepository.save(p);
+        personService.insertPerson(person);
     }
-
 
     @PostMapping("/update")
     public void updatePerson(@RequestBody PersonRq person,@RequestParam Long id){
-        Person p = personRepository.getOne(id);
-        p.setName(person.getName());
-        p.setPassword(encoder.encode(person.getPassword()));
-        p.setEmail(person.getEmail());
-        personRepository.save(p);
+        personService.updatePerson(person, id);
     }
 
     @PostMapping("/validPassword")
-    public ResponseEntity<Person> validPassword(@RequestParam String login,
-                                              @RequestParam String password){
-
-
-        Optional<Person> person = personRepository.findByLogin(login);
-
-        if (person.isEmpty()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-
-        Person p = person.get();
-
-        boolean valid = false;
-        valid = encoder.matches(password, p.getPassword());
-
-        HttpStatus status = (valid) ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
-
-        if (!valid) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }else{
-            return ResponseEntity.status(HttpStatus.OK).body(p);
-        }
-
-
-
+    public ResponseEntity<Person> validPassword(@RequestParam String login, @RequestParam String password){
+        return personService.validPassword(login, password);
     }
 }
 
