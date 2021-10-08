@@ -27,6 +27,10 @@ public class PersonService {
     @Autowired
     private PasswordEncoder encoder;
 
+    public Integer countPerson(Long id){
+        return personRepository.countById(id);
+    }
+
     public List<PersonRs> findAll(){
         var people = personRepository.findAll();
         return people.stream().map(PersonRs::convert).collect(Collectors.toList());

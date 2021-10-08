@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/content")
+@CrossOrigin(origins="*")
 public class contentController {
     @Autowired
     private ContentService contentService;
@@ -36,7 +37,7 @@ public class contentController {
     }
 
     //Delete a content by id
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deleteContent(@PathVariable Integer id){ contentService.deleteContent(id); }
 
 
@@ -47,7 +48,7 @@ public class contentController {
     }
 
     //Update a content
-    @PostMapping("/update")
+    @PutMapping("/")
     public void updateContent(@RequestBody ContentRs content){
         contentService.updateContent(content);
     }

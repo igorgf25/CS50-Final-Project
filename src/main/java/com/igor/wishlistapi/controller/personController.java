@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/person")
+@CrossOrigin(origins="http://localhost:4200")
 public class personController {
 
     @Autowired
@@ -27,13 +28,13 @@ public class personController {
         return personService.findById(id);
     }
 
-    @PostMapping("/insert")
+    @PostMapping("/")
     public void insertPerson(@RequestBody PersonRq person)
     {
         personService.insertPerson(person);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/")
     public void updatePerson(@RequestBody PersonRq person,@RequestParam Long id){
         personService.updatePerson(person, id);
     }
